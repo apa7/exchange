@@ -2,3 +2,8 @@
 target/**
 logs/**
 weth.iml
+front/build/**
+front/contracts/**
+front/migrations/**
+front/node_modules/**
+front/test/**

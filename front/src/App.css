@@ -1,0 +1,28 @@
+.vertspacing {
+    margin-top: 1.25vh
+}
+
+.img-circle {
+    border-radius: 50%;
+    margin-top: 0.75vh
+}
+
+.navbar-text:hover {
+    color: #dddddd
+}
+
+.double {
+    width: 200%
+}
+
+.popover {
+  max-width: none;
+}
+
+.tooltip {
+    max-width: none;
+}
+
+.h2 {
+    font-size: 50%
+}
