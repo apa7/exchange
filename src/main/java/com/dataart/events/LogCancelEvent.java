@@ -34,7 +34,8 @@ public class LogCancelEvent {
             "taker token contract",
             "maker tokens cancelled",
             "taker tokens cancelled",
-            "order hash"
+            "order hash",
+            "tx hash"
     };
 
     @Autowired
@@ -42,6 +43,10 @@ public class LogCancelEvent {
 
     public String getEventName() {
         return "LogCancel";
+    }
+
+    private String getTransactionHash(Log ethLogObject) {
+        return ethLogObject.getTransactionHash();
     }
 
     //indexed fields
@@ -99,10 +104,17 @@ public class LogCancelEvent {
         String orderHash = getOrderHash(ethLogObject);
         orderService.cancelOrderByHash(orderHash);
 
-        LOGGER.info(LoggerDescriptionFormat.loggerDescriptionString(getEventName(), DESCRIPTION_FIELDS),
-                getMakerAddress(ethLogObject), getFeeRecipientAddress(ethLogObject),
-                getTokenPairHash(ethLogObject), getMakerTokenAddress(ethLogObject),
-                getTakerTokenAddress(ethLogObject), getMakerTokenCancelled(ethLogObject),
-                getTakerTokenCancelled(ethLogObject), getOrderHash(ethLogObject));
+        LOGGER.info(
+                LoggerDescriptionFormat.loggerDescriptionString(getEventName(), DESCRIPTION_FIELDS),
+                getMakerAddress(ethLogObject),
+                getFeeRecipientAddress(ethLogObject),
+                getTokenPairHash(ethLogObject),
+                getMakerTokenAddress(ethLogObject),
+                getTakerTokenAddress(ethLogObject),
+                getMakerTokenCancelled(ethLogObject),
+                getTakerTokenCancelled(ethLogObject),
+                getOrderHash(ethLogObject),
+                getTransactionHash(ethLogObject)
+        );
     }
 }

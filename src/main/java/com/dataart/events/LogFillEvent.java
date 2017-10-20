@@ -47,7 +47,8 @@ public class LogFillEvent {
             "taker tokens filled",
             "maker fee paid",
             "taker fee paid",
-            "order hash"
+            "order hash",
+            "tx hash"
     };
 
     @Autowired
@@ -55,6 +56,10 @@ public class LogFillEvent {
 
     public String getEventName() {
         return "LogFill";
+    }
+
+    private String getTransactionHash(Log ethLogObject) {
+        return ethLogObject.getTransactionHash();
     }
 
     //indexed fields
@@ -126,11 +131,20 @@ public class LogFillEvent {
         String orderHash = getOrderHash(ethLogObject);
         orderService.closeOrderByHash(orderHash);
 
-        LOGGER.info(LoggerDescriptionFormat.loggerDescriptionString(getEventName(), DESCRIPTION_FIELDS),
-                getMakerAddress(ethLogObject), getFeeRecipientAddress(ethLogObject),
-                getTokenPairHash(ethLogObject), getTakerAddress(ethLogObject),
-                getMakerTokenAddress(ethLogObject), getTakerTokenAddress(ethLogObject),
-                getMakerTokenFilled(ethLogObject), getTakerTokenFilled(ethLogObject),
-                getMakerPaidFee(ethLogObject), getTakerPaidFee(ethLogObject), getOrderHash(ethLogObject));
+        LOGGER.info(
+                LoggerDescriptionFormat.loggerDescriptionString(getEventName(), DESCRIPTION_FIELDS),
+                getMakerAddress(ethLogObject),
+                getFeeRecipientAddress(ethLogObject),
+                getTokenPairHash(ethLogObject),
+                getTakerAddress(ethLogObject),
+                getMakerTokenAddress(ethLogObject),
+                getTakerTokenAddress(ethLogObject),
+                getMakerTokenFilled(ethLogObject),
+                getTakerTokenFilled(ethLogObject),
+                getMakerPaidFee(ethLogObject),
+                getTakerPaidFee(ethLogObject),
+                getOrderHash(ethLogObject),
+                getTransactionHash(ethLogObject)
+        );
     }
 }

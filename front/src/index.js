@@ -4,7 +4,6 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import NavBar from './Navbar.js'
 import OrderList from './OrderList'
 import NewOrder from './NewOrder'
-import AllowanceManager from './AllowanceManager'
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
 import Grid from 'material-ui/Grid';
 import TokenWallet from './TokenWallet';
