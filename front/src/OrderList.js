@@ -4,13 +4,10 @@ import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Ta
 import { withStyles } from 'material-ui/styles';
 import $ from 'jquery';
 import Paper from 'material-ui/Paper';
-import Grid from 'material-ui/Grid';
-import {ZeroEx} from '0x.js';
 import SingleOrder from './SingleOrder'
 var BigNumber = require('bignumber.js');
 var abi = require('human-standard-token-abi')
 
-const drawerWidth = 240;
 
 const styles = theme => ({
     paper: theme.mixins.gutters({
@@ -116,7 +113,6 @@ class OrderList extends React.Component {
 
     render() {
         const { classes } = this.props;
-        console.log(this.state);
         var order = (this.state.clickedHash !== '') ? (
             <SingleOrder
                 hash={this.state.clickedHash}

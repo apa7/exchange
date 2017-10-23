@@ -1,18 +1,15 @@
 import { withStyles } from 'material-ui/styles';
 import React from 'react'
 import $ from 'jquery';
-import getWeb3 from './utils/getWeb3'
+import getWeb3 from '../utils/getWeb3'
 var abi = require('human-standard-token-abi')
-import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
-import Typography from 'material-ui/Typography';
+import Table from 'material-ui/Table';
 import Paper from 'material-ui/Paper';
-import blockies from 'ethereum-blockies-png'
-import Avatar from 'material-ui/Avatar'
 var BigNumber = require('bignumber.js');
-import Snackbar from 'material-ui/Snackbar';
-import Switch from 'material-ui/Switch';
-import IconButton from 'material-ui/IconButton';
-import CloseIcon from 'material-ui-icons/Close';
+import WalletTableHead from './WalletColumns/WalletTableHead'
+import TableTitle from './TableTitle'
+import TxSnackbar from './TxSnackbar/TxSnackbar'
+import TokenTableBody from './TokenInfo/TokenTableBody'
 
 const styles = theme => ({
     paper: theme.mixins.gutters({
@@ -117,6 +114,7 @@ class TokenWallet extends React.Component {
         })
     }
 
+
     waitForTxMined(web3, tx, index) {
         var context = this;
         web3.eth.getTransaction(tx, function(err, res) {
@@ -157,83 +155,27 @@ class TokenWallet extends React.Component {
 
     render() {
         const { classes } = this.props;
-        console.log(this.state);
-        var ethTxLink = 'https://kovan.etherscan.io/tx/' + this.state.txHash;
-        var ethTxText = (this.state.txHash) ? 'tx has been sent' : 'tx rejected';
         return (
             <div>
                 <Paper className={classes.paper}>
-                    <Typography type="headline" color="inherit">
-                        Your tokens:
-                    </Typography>
-
+                    <TableTitle
+                        title='Your tokens:'
+                    />
                     <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Token</TableCell>
-                                <TableCell>Contract address</TableCell>
-                                <TableCell> Trade permissions </TableCell>
-                                <TableCell numeric>Balance</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {this.state.tokens.map((n, idx) => {
-                                var img = blockies.createDataURL({
-                                    seed: n.address
-                                });
-                                var link = 'https://kovan.etherscan.io/token/' + n.address;
-                                var balance = (this.state.balances[idx]) ? this.state.balances[idx].dividedBy(new BigNumber('1000000000000000000')).toString(10): '';
-                                var checked = this.state.tradePermissions[idx];
-                                var tradeSwitch = (checked !== undefined) ? (
-                                    <Switch
-                                        checked={checked}
-                                        onChange={this.sendTx(idx)}
-                                    />
-                                ) : undefined;
-                                return (
-                                    <TableRow key={n.id}>
-                                        <TableCell className={classes.wrap}>
-                                            <a href={link} target='_blank'>
-                                                <Avatar
-                                                src={img}
-                                                className={classes.tokenPic}
-                                                />
-                                                <Typography className={classes.tokenName} type='subheading'>{n.symbol}</Typography>
-                                            </a>
-                                        </TableCell>
-                                        <TableCell>{n.address}</TableCell>
-                                        <TableCell>
-                                            {tradeSwitch}
-                                        </TableCell>
-                                        <TableCell numeric>{balance}</TableCell>
-                                    </TableRow>
-                                );
-                            })}
-                        </TableBody>
+                        <WalletTableHead/>
+                        <TokenTableBody
+                            tradePermissions={this.state.tradePermissions}
+                            tokens={this.state.tokens}
+                            balances={this.state.balances}
+                            sendTx={this.sendTx}
+                        />
                     </Table>
                 </Paper>
 
-                <Snackbar
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'center',
-                    }}
-                    SnackbarContentProps={{
-                        'aria-describedby': 'message-id',
-                    }}
-                    open={this.state.snackOpen}
-                    message={<Typography type="title" align='center' color="inherit"><a target='_blank' href={ethTxLink}>{ethTxText}</a></Typography>}
-                    action={[
-                        <IconButton
-                            key="close"
-                            aria-label="Close"
-                            color="inherit"
-                            className={classes.close}
-                            onClick={this.handleRequestClose}
-                        >
-                            <CloseIcon />
-                        </IconButton>,
-                    ]}
+                <TxSnackbar
+                    txHash={this.state.txHash}
+                    snackOpen={this.state.snackOpen}
+                    handleRequestClose={this.handleRequestClose}
                 />
             </div>
         );

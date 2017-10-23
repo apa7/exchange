@@ -1,10 +1,7 @@
 import React from 'react'
 import getWeb3 from './utils/getWeb3'
-import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
 import { withStyles } from 'material-ui/styles';
 import $ from 'jquery';
-import Paper from 'material-ui/Paper';
-import Grid from 'material-ui/Grid';
 import Button from 'material-ui/Button';
 import Dialog, {
   DialogActions,
@@ -15,11 +12,9 @@ import Dialog, {
 import {ZeroEx} from '0x.js';
 var BigNumber = require('bignumber.js');
 BigNumber.config({ ERRORS: false });
-import { red, purple } from 'material-ui/colors';
+import { red } from 'material-ui/colors';
 
 
-const exchangeAddress = '0x90fe2af704b34e0224bf2299c838e04d4dcf1364';
-const zeroAddress = '0x0000000000000000000000000000000000000000';
 const zeroExConfig = {
     gasPrice: new BigNumber(60000000000)
 };
@@ -209,8 +204,6 @@ class SingleOrder extends React.Component {
         var title = 'Order ' + this.props.hash;
         var firstLink = 'https://kovan.etherscan.io/token/' + this.state.order.makerTokenAddress;
         var secondLink = 'https://kovan.etherscan.io/token/' + this.state.order.takerTokenAddress;
-        console.log((this.state.userAddress !== undefined) ? this.state.userAddress.toLowerCase() : 'userAd undefined');
-        console.log((this.state.order.maker !== undefined) ?this.state.order.maker.toLowerCase() : "orderMaker undefined");
         var cancelButton = (this.state.userAddress !== undefined && this.state.order.maker !== undefined && this.state.userAddress.toLowerCase() === this.state.order.maker.toLowerCase()) ? (
             <Button onClick={this.handleCancel} color="primary">
                 Cancel

@@ -1,16 +1,14 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
-import NavBar from './Navbar.js'
+import NavBar from './Navbar/Navbar.js'
 import OrderList from './OrderList'
 import NewOrder from './NewOrder'
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
-import Grid from 'material-ui/Grid';
-import TokenWallet from './TokenWallet';
+import TokenWallet from './TokenWallet/TokenWallet';
 
 const theme = createMuiTheme({
   palette: {
-
   },
 });
 
