@@ -18,12 +18,12 @@ public class Web3EventListener {
             .addSingleTopic(LogFillEvent.TOPIC);
         web3
                 .ethLogObservable(fillFilter)
-                .subscribe(log -> logFillEvent.processEvent(log));
+                .subscribe(logFillEvent::processEvent);
 
         EthFilter cancelFilter = new EthFilter(DefaultBlockParameterName.EARLIEST, DefaultBlockParameterName.LATEST, exchangeContractAddress)
                 .addSingleTopic(LogCancelEvent.TOPIC);
         web3
                 .ethLogObservable(cancelFilter)
-                .subscribe(log -> logCancelEvent.processEvent(log));
+                .subscribe(logCancelEvent::processEvent);
     }
 }
