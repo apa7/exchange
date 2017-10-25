@@ -123,7 +123,7 @@ public class LogFillEvent {
 
     void processEvent(Log ethLogObject) {
         String orderHash = getOrderHash(ethLogObject);
-        orderService.partialFill(orderHash, getTakerTokenFilled(ethLogObject).toString());
+        orderService.partialFill(orderHash, getTakerTokenFilled(ethLogObject));
 
         LOGGER.info(
                 LoggerDescriptionFormat.loggerDescriptionString(getEventName(), DESCRIPTION_FIELDS),

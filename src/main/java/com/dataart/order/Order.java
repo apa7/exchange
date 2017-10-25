@@ -31,12 +31,12 @@ public class Order {
     private String maker;
     private BigInteger makerFee;
     private String makerTokenAddress;
-    private String makerTokenValue;
+    private BigInteger makerTokenValue;
 
     private String taker;
     private BigInteger takerFee;
     private String takerTokenAddress;
-    private String takerTokenValue;
+    private BigInteger takerTokenValue;
 
     private String salt;
 
@@ -51,32 +51,25 @@ public class Order {
 
     private String hash;
 
-    private String filled;
-    private String cancelled;
+    private BigInteger filled;
+    private BigInteger cancelled;
 
-    public void addFilled(String add) {
-        filled = new BigInteger(filled)
-                .add(new BigInteger(add))
-                .toString();
+    public void addFilled(BigInteger add) {
+        filled = filled.add(add);
     }
 
-    public void addCancelled(String cancel) {
-        cancelled = new BigInteger(cancelled)
-                .add(new BigInteger(cancel))
-                .toString();
+    public void addCancelled(BigInteger cancel) {
+        cancelled = cancelled.add(cancel);
     }
 
     public boolean checkStatus() {
-        return (new BigInteger(filled).add(new BigInteger(cancelled)).compareTo(new BigInteger(takerTokenValue)) == 0 &&
+        return (filled.add(cancelled).compareTo(takerTokenValue) == 0 &&
                 status.equalsIgnoreCase("OPEN"));
     }
 
     @JsonInclude
-    public String getOpenValue() {
-        return new BigInteger(takerTokenValue)
-                .subtract(new BigInteger(filled))
-                .subtract(new BigInteger(cancelled))
-                .toString();
+    public BigInteger getOpenValue() {
+        return takerTokenValue.subtract(filled).subtract(cancelled);
     }
 
     public BigDecimal filledCoefficient() {
@@ -89,6 +82,6 @@ public class Order {
     }
 
     public BigInteger getPrice() {
-        return new BigInteger(takerTokenValue).divide(new BigInteger(makerTokenValue));
+        return takerTokenValue.divide(makerTokenValue);
     }
 }

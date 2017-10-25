@@ -90,7 +90,7 @@ public class LogCancelEvent {
 
     void processEvent(Log ethLogObject) {
         String orderHash = getOrderHash(ethLogObject);
-        orderService.partialCancel(orderHash, getTakerTokenCancelled(ethLogObject).toString());
+        orderService.partialCancel(orderHash, getTakerTokenCancelled(ethLogObject));
 
         LOGGER.info(
                 LoggerDescriptionFormat.loggerDescriptionString(getEventName(), DESCRIPTION_FIELDS),

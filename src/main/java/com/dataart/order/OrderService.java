@@ -35,7 +35,7 @@ public class OrderService {
     }
 
     @Transactional(readOnly = false)
-    public Order partialCancel(String orderHash, String cancelAmount) {
+    public Order partialCancel(String orderHash, BigInteger cancelAmount) {
         Order order = orderRepository.findByHash(orderHash);
         if (order == null) return null;
         order.addCancelled(cancelAmount);
@@ -46,7 +46,7 @@ public class OrderService {
     }
 
     @Transactional(readOnly = false)
-    public Order partialFill(String orderHash, String fillAmount) {
+    public Order partialFill(String orderHash, BigInteger fillAmount) {
         Order order = orderRepository.findByHash(orderHash);
         if (order == null) return null;
         order.addFilled(fillAmount);
@@ -68,29 +68,29 @@ public class OrderService {
         return tokenPairOrders;
     }
 
-    String currentOrderFillAmount(Order order, BigInteger makerTokensToFill) {
+    BigInteger currentOrderFillAmount(Order order, BigInteger makerTokensToFill) {
         if (order.getOpenMakerTokens().compareTo(makerTokensToFill) >= 0) {
-            return makerTokensToFill.multiply(order.getPrice()).toString();
+            return makerTokensToFill.multiply(order.getPrice());
         }
         return order.getOpenValue();
     }
 
-    String makerTokensFillAmount(Order order, BigInteger makerTokensToFill) {
+    BigInteger makerTokensFillAmount(Order order, BigInteger makerTokensToFill) {
         if (order.getOpenMakerTokens().compareTo(makerTokensToFill) >= 0) {
-            return makerTokensToFill.toString();
+            return makerTokensToFill;
         }
-        return order.getOpenMakerTokens().toString();
+        return order.getOpenMakerTokens();
     }
 
     List<OrderFill> getFillsForMarketOrder(MarketOrder order) {
         List<OrderFill> result = new ArrayList<>();
         List<Order> orders = getSortedOrdersForTokenPair(order.tokenToBuyAddress, order.tokenToSellAddress);
-        String amount = order.tokenToBuyAmount;
-        for (int i = 0; i < orders.size() && new BigInteger(amount).compareTo(BigInteger.ZERO) > 0; ++i) {
-            String fill = currentOrderFillAmount(orders.get(i), new BigInteger(amount));
-            String makerFill = makerTokensFillAmount(orders.get(i), new BigInteger(amount));
+        BigInteger amount = order.tokenToBuyAmount;
+        for (int i = 0; i < orders.size() && amount.compareTo(BigInteger.ZERO) > 0; ++i) {
+            BigInteger fill = currentOrderFillAmount(orders.get(i), amount);
+            BigInteger makerFill = makerTokensFillAmount(orders.get(i), amount);
             result.add(new OrderFill(orders.get(i), fill));
-            amount = new BigInteger(amount).subtract(new BigInteger(makerFill)).toString();
+            amount = amount.subtract(makerFill);
         }
         return result;
     }

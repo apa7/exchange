@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigInteger;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -13,5 +15,5 @@ public class MarketOrder {
     String tokenToBuyAddress;
     String tokenToSellAddress;
 
-    String tokenToBuyAmount;
+    BigInteger tokenToBuyAmount;
 }
