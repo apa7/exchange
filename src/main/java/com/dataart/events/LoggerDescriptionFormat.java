@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 public class LoggerDescriptionFormat {
     private static int PAD = 40;
+
     private static String formatDesciptionLine(String text) {
         return StringUtils.rightPad("    " + text, PAD, " ") + ": [{}],\r\n";
     }

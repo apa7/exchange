@@ -4,6 +4,7 @@ import Typography from 'material-ui/Typography';
 import AccountBalanceWalletIcon from 'material-ui-icons/AccountBalanceWallet'
 import AddBoxIcon from 'material-ui-icons/AddBox'
 import ViewListIcon from 'material-ui-icons/ViewList'
+import LibraryAddIcon from 'material-ui-icons/LibraryAdd'
 import { Link } from 'react-router-dom'
 
 const styles = theme => ({
@@ -28,6 +29,9 @@ class SingleMenuItem extends React.Component {
         }
         if (this.props.iconName === 'accountbalancewallet') {
             return <AccountBalanceWalletIcon className={classes.icon}/>;
+        }
+        if (this.props.iconName === 'libraryadd') {
+            return <LibraryAddIcon className={classes.icon}/>;
         }
     }
 

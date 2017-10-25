@@ -9,18 +9,6 @@ import org.web3j.protocol.core.methods.response.Log;
 
 import java.math.BigInteger;
 
-/*
-    event LogCancel(
-        address indexed maker,
-        address indexed feeRecipient,
-        address makerToken,
-        address takerToken,
-        uint cancelledMakerTokenAmount,
-        uint cancelledTakerTokenAmount,
-        bytes32 indexed tokens,
-        bytes32 orderHash
-    );
- */
 @Component
 public class LogCancelEvent {
     private final Logger LOGGER = LoggerFactory.getLogger(LogCancelEvent.class);
@@ -102,7 +90,7 @@ public class LogCancelEvent {
 
     void processEvent(Log ethLogObject) {
         String orderHash = getOrderHash(ethLogObject);
-        orderService.cancelOrderByHash(orderHash);
+        orderService.partialCancel(orderHash, getTakerTokenCancelled(ethLogObject).toString());
 
         LOGGER.info(
                 LoggerDescriptionFormat.loggerDescriptionString(getEventName(), DESCRIPTION_FIELDS),

@@ -113,6 +113,7 @@ class OrderList extends React.Component {
 
     render() {
         const { classes } = this.props;
+        console.log(this.state);
         var order = (this.state.clickedHash !== '') ? (
             <SingleOrder
                 hash={this.state.clickedHash}
@@ -138,13 +139,14 @@ class OrderList extends React.Component {
                         </TableHead>
                         <TableBody>
                             {this.state.orders.map(n => {
+                                var coef = new BigNumber(n.openValue).dividedBy(new BigNumber(n.takerTokenValue));
                                 return (
                                     <TableRow key={n.id} onClick={event => this.rowClick(event, n.hash)}>
                                         <TableCell>{n.maker}</TableCell>
                                         <TableCell>{this.getSymbolByAddress(n.makerTokenAddress)}</TableCell>
-                                        <TableCell numeric>{new BigNumber(n.makerTokenValue).dividedBy(decimals).toString(10)}</TableCell>
+                                        <TableCell numeric>{new BigNumber(n.makerTokenValue).times(coef).dividedBy(decimals).toString(10)}</TableCell>
                                         <TableCell>{this.getSymbolByAddress(n.takerTokenAddress)}</TableCell>
-                                        <TableCell numeric>{new BigNumber(n.takerTokenValue).dividedBy(decimals).toString(10)}</TableCell>
+                                        <TableCell numeric>{new BigNumber(n.openValue).dividedBy(decimals).toString(10)}</TableCell>
                                     </TableRow>
                                 );
                             })}

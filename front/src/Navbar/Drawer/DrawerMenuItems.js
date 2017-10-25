@@ -16,9 +16,16 @@ var wallet = {
     text: 'Token wallet'
 };
 
+var marketOrder = {
+    iconName: 'libraryadd',
+    link: '/market',
+    text: 'Post a market order'
+}
+
 var items = [
     orders,
     post,
+    marketOrder,
     wallet
 ];
 

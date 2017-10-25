@@ -133,7 +133,7 @@ class SingleOrder extends React.Component {
         };
         console.log(signedOrder);
         var zeroExInstance = new ZeroEx(this.state.web3.currentProvider, zeroExConfig);
-        zeroExInstance.exchange.fillOrderAsync(signedOrder, signedOrder.takerTokenAmount, false, this.state.userAddress, {shouldValidate: false}).then(txhash => {
+        zeroExInstance.exchange.fillOrderAsync(signedOrder, new BigNumber(order.openValue), false, this.state.userAddress, {shouldValidate: false}).then(txhash => {
             context.setState({open: false});
         })
     };
@@ -165,7 +165,7 @@ class SingleOrder extends React.Component {
         };
         console.log(signedOrder);
         var zeroExInstance = new ZeroEx(this.state.web3.currentProvider, zeroExConfig);
-        zeroExInstance.exchange.cancelOrderAsync(signedOrder, signedOrder.takerTokenAmount, false, this.state.userAddress, {shouldValidate: false}).then(txhash => {
+        zeroExInstance.exchange.cancelOrderAsync(signedOrder, new BigNumber(order.openValue), false, this.state.userAddress, {shouldValidate: false}).then(txhash => {
             context.setState({open: false});
         })
     }
@@ -209,14 +209,15 @@ class SingleOrder extends React.Component {
                 Cancel
             </Button>
         ) : undefined;
+        var coef = new BigNumber(this.state.order.openValue).dividedBy(new BigNumber(this.state.order.takerTokenValue));
         return (
             <Dialog open={this.state.open} onRequestClose={this.handleRequestClose}>
                 <DialogTitle>{title}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Confirm the exchange of {new BigNumber(this.state.order.makerTokenValue).dividedBy(decimals).toString(10)} {this.getSymbolByAddress(this.state.order.makerTokenAddress)} tokens
+                        Confirm the exchange of {new BigNumber(this.state.order.makerTokenValue).times(coef).dividedBy(decimals).toString(10)} {this.getSymbolByAddress(this.state.order.makerTokenAddress)} tokens
                         (contract address: <a target='_blank' href={firstLink}> {this.state.order.makerTokenAddress} </a>)
-                        for {new BigNumber(this.state.order.takerTokenValue).dividedBy(decimals).toString(10)} {this.getSymbolByAddress(this.state.order.takerTokenAddress)} tokens
+                        for {new BigNumber(this.state.order.openValue).dividedBy(decimals).toString(10)} {this.getSymbolByAddress(this.state.order.takerTokenAddress)} tokens
                         (contract address: <a target='_blank' href={secondLink}> {this.state.order.takerTokenAddress} </a>)
                     </DialogContentText>
                     <DialogContentText className={classes.errorText}>

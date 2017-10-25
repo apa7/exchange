@@ -1,12 +1,10 @@
 package com.dataart.order;
 
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.*;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import static javax.persistence.GenerationType.IDENTITY;
@@ -16,7 +14,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "orders")
+@Table(name = "orders_partial")
+@Builder
 public class Order {
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -51,4 +50,45 @@ public class Order {
     private String signatureR;
 
     private String hash;
+
+    private String filled;
+    private String cancelled;
+
+    public void addFilled(String add) {
+        filled = new BigInteger(filled)
+                .add(new BigInteger(add))
+                .toString();
+    }
+
+    public void addCancelled(String cancel) {
+        cancelled = new BigInteger(cancelled)
+                .add(new BigInteger(cancel))
+                .toString();
+    }
+
+    public boolean checkStatus() {
+        return (new BigInteger(filled).add(new BigInteger(cancelled)).compareTo(new BigInteger(takerTokenValue)) == 0 &&
+                status.equalsIgnoreCase("OPEN"));
+    }
+
+    @JsonInclude
+    public String getOpenValue() {
+        return new BigInteger(takerTokenValue)
+                .subtract(new BigInteger(filled))
+                .subtract(new BigInteger(cancelled))
+                .toString();
+    }
+
+    public BigDecimal filledCoefficient() {
+        return new BigDecimal(getOpenValue())
+                .divide(new BigDecimal(getTakerTokenValue()), 10, BigDecimal.ROUND_HALF_UP);
+    }
+
+    public BigInteger getOpenMakerTokens() {
+        return filledCoefficient().multiply(new BigDecimal(makerTokenValue)).toBigInteger();
+    }
+
+    public BigInteger getPrice() {
+        return new BigInteger(takerTokenValue).divide(new BigInteger(makerTokenValue));
+    }
 }

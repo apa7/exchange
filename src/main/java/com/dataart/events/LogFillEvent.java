@@ -1,19 +1,13 @@
 package com.dataart.events;
 
 import com.dataart.order.OrderService;
-import org.apache.commons.lang.StringUtils;
-import org.bouncycastle.jcajce.provider.symmetric.DES;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.web3j.protocol.core.methods.response.Log;
 
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 /*
     event LogFill(
@@ -96,40 +90,40 @@ public class LogFillEvent {
     }
 
     private String getTakerAddress(Log ethLogObject) {
-        return formatHexStringFromData(ethLogObject,26, 66);
+        return formatHexStringFromData(ethLogObject, 26, 66);
     }
 
     private String getMakerTokenAddress(Log ethLogObject) {
-        return formatHexStringFromData(ethLogObject,90, 130);
+        return formatHexStringFromData(ethLogObject, 90, 130);
     }
 
     private String getTakerTokenAddress(Log ethLogObject) {
-        return formatHexStringFromData(ethLogObject,154, 194);
+        return formatHexStringFromData(ethLogObject, 154, 194);
     }
 
     private BigInteger getMakerTokenFilled(Log ethLogObject) {
-        return formatUintStringFromData(ethLogObject,194, 258);
+        return formatUintStringFromData(ethLogObject, 194, 258);
     }
 
     private BigInteger getTakerTokenFilled(Log ethLogObject) {
-        return formatUintStringFromData(ethLogObject,258, 322);
+        return formatUintStringFromData(ethLogObject, 258, 322);
     }
 
     private BigInteger getMakerPaidFee(Log ethLogObject) {
-        return formatUintStringFromData(ethLogObject,322, 386);
+        return formatUintStringFromData(ethLogObject, 322, 386);
     }
 
     private BigInteger getTakerPaidFee(Log ethLogObject) {
-        return formatUintStringFromData(ethLogObject,386, 450);
+        return formatUintStringFromData(ethLogObject, 386, 450);
     }
 
     private String getOrderHash(Log ethLogObject) {
-        return formatHexStringFromData(ethLogObject,450, 514);
+        return formatHexStringFromData(ethLogObject, 450, 514);
     }
 
     void processEvent(Log ethLogObject) {
         String orderHash = getOrderHash(ethLogObject);
-        orderService.closeOrderByHash(orderHash);
+        orderService.partialFill(orderHash, getTakerTokenFilled(ethLogObject).toString());
 
         LOGGER.info(
                 LoggerDescriptionFormat.loggerDescriptionString(getEventName(), DESCRIPTION_FIELDS),

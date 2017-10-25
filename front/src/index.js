@@ -6,6 +6,7 @@ import OrderList from './OrderList'
 import NewOrder from './NewOrder'
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
 import TokenWallet from './TokenWallet/TokenWallet';
+import MarketOrder from './MarketOrder'
 
 const theme = createMuiTheme({
   palette: {
@@ -35,6 +36,12 @@ const PostOrder = () => (
     </MuiThemeProvider>
 )
 
+const PostMarket = () => (
+    <MuiThemeProvider theme={theme}>
+        <MarketOrder/>
+    </MuiThemeProvider>
+)
+
 
 class Router extends React.Component {
     render() {
@@ -46,6 +53,7 @@ class Router extends React.Component {
                       <Route exact path='/orders' component={Main}/>
                       <Route path='/wallet' component={Wallet}/>
                       <Route exact path='/new' component={PostOrder}/>
+                      <Route exact path='/market' component={PostMarket}/>
                   </Switch>
                 </div>
             </BrowserRouter>

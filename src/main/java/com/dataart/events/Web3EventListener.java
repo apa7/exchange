@@ -15,7 +15,7 @@ public class Web3EventListener {
     @Autowired
     public Web3EventListener(LogFillEvent logFillEvent, LogCancelEvent logCancelEvent) {
         EthFilter fillFilter = new EthFilter(DefaultBlockParameterName.EARLIEST, DefaultBlockParameterName.LATEST, exchangeContractAddress)
-            .addSingleTopic(LogFillEvent.TOPIC);
+                .addSingleTopic(LogFillEvent.TOPIC);
         web3
                 .ethLogObservable(fillFilter)
                 .subscribe(logFillEvent::processEvent);

@@ -111,24 +111,20 @@ const decimals = new BigNumber('1000000000000000000');
 const tokenTransferProxyAddress = '0x087Eed4Bc1ee3DE49BeFbd66C662B434B15d49d4';
 
 
-class NewOrder extends React.Component {
+class MarketOrder extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             idA: '',
             idB: '',
             valueA: undefined,
-            valueB: undefined,
             web3: null,
             userAddress: '',
             tokens: [],
             confirm: false,
-            validateBalance: false,
-            validateAllowance: false
         };
         this.handleChange = this.handleChange.bind(this);
         this.doSomething = this.doSomething.bind(this);
-        this.validateButton = this.validateButton.bind(this);
         this.doSomething = this.doSomething.bind(this);
         this.signAndSend = this.signAndSend.bind(this);
     }
@@ -186,8 +182,6 @@ class NewOrder extends React.Component {
             tokenAbi.allowance.call(web3.eth.accounts[0], tokenTransferProxyAddress, function(err, allowed) {
                 var enoughAllowance = allowed.gte(new BigNumber(context.state.valueA).times(decimals));
                 context.setState({
-                    validateBalance: enoughBalance,
-                    validateAllowance: enoughAllowance,
                     confirm: true
                 })
             })
@@ -195,7 +189,58 @@ class NewOrder extends React.Component {
     }
 
     signAndSend() {
+        var zeroExInstance = new ZeroEx(this.state.web3.currentProvider, zeroExConfig);
         var context = this;
+        var zeroExOrders = [];
+        var params = {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            type: 'POST',
+            url: 'http://localhost:8080/orders/market',
+            data: JSON.stringify({
+                tokenToBuyAddress: this.state.tokens[this.state.idA - 1].address,
+                tokenToSellAddress: this.state.tokens[this.state.idB - 1].address,
+                tokenToBuyAmount: new BigNumber(this.state.valueA).times(decimals).toString(10)
+            }),
+        };
+        $.ajax(params).then(ordersToFill => {
+            ordersToFill.forEach(orderInfo => {
+                var fill = orderInfo.fill;
+                var order = orderInfo.order;
+                var ecSig = {
+                    r: order.signatureR,
+                    s: order.signatureS,
+                    v: Number(order.signatureV)
+                };
+                var signedOrder = {
+                    ecSignature: ecSig,
+                    exchangeContractAddress: order.exchangeContract,
+                    expirationUnixTimestampSec: new BigNumber(order.expirationTime),
+                    feeRecipient: order.feeRecipient,
+                    maker: order.maker,
+                    makerFee: order.makerFee.toString(),
+                    makerTokenAddress: order.makerTokenAddress,
+                    makerTokenAmount: new BigNumber(order.makerTokenValue),
+                    salt: new BigNumber(order.salt).toString(10),
+                    taker: order.taker,
+                    takerFee: order.takerFee.toString(),
+                    takerTokenAddress: order.takerTokenAddress,
+                    takerTokenAmount: new BigNumber(order.takerTokenValue),
+                };
+                var fillObject = {
+                    signedOrder: signedOrder,
+                    takerTokenFillAmount: fill
+                };
+                zeroExOrders.push(fillObject);
+            });
+            zeroExInstance.exchange.batchFillOrdersAsync(zeroExOrders, false, this.state.userAddress, {shouldValidate: false}).then(txhash => {
+                context.setState({confirm: false});
+            })
+        });
+        /*
+        $.ajax(params).then(context.setState({confirm: false}));
         var zeroExInstance = new ZeroEx(this.state.web3.currentProvider, zeroExConfig);
         var salt = ZeroEx.generatePseudoRandomSalt().toString(10);
 
@@ -250,19 +295,8 @@ class NewOrder extends React.Component {
             };
             $.ajax(params).then(context.setState({confirm: false}));
         });
-
+        */
     }
-
-    validateButton() {
-        return !(this.state.validateBalance && this.state.validateAllowance);
-    }
-
-    getHelperMessage() {
-        if (this.state.validateBalance && this.state.validateAllowance) return '';
-        if (!this.state.validateBalance) return "You don't have enough tokens to create an order.";
-        if (!this.state.validateAllowance) return "Your allowance is insufficient.";
-    }
-
 
     render() {
         const { classes } = this.props;
@@ -279,17 +313,14 @@ class NewOrder extends React.Component {
                 <DialogTitle>Confirm an order</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Confirm the exchange of {valueAmsg} {this.state.tokens[this.state.idA - 1].symbol} for {valueBmsg} {this.state.tokens[this.state.idB - 1].symbol}.
-                    </DialogContentText>
-                    <DialogContentText className={classes.errorText}>
-                        {this.getHelperMessage()}
+                        This order will be processed immediately by the current market prices.
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={this.handleRequestClose} color="primary">
                         Reject
                     </Button>
-                    <Button onClick={this.signAndSend} color="primary" disabled={this.validateButton()}>
+                    <Button onClick={this.signAndSend} color="primary">
                         Sign and send
                     </Button>
                 </DialogActions>
@@ -299,12 +330,12 @@ class NewOrder extends React.Component {
         return (<div>
             <Paper className={classes.paper} elevation={3}>
                 <Typography className={classes.header} type="title" color="inherit">
-                    Place a new order
+                    Place a new market order
                 </Typography>
                 <TextField
                     id="select-maker-token"
                     select
-                    label="Tokens you're selling"
+                    label="Tokens you're buying"
                     className={classes.textField}
                     value={this.state.idA}
                     onChange={this.handleChange('idA')}
@@ -322,7 +353,7 @@ class NewOrder extends React.Component {
                     ))}
                 </TextField>
                 <FormControl className={classes.textField}>
-                    <InputLabel htmlFor="amount-A">The amount of tokens youre selling</InputLabel>
+                    <InputLabel htmlFor="amount-A">The amount of tokens youre buying</InputLabel>
                     <Input
                         value={this.state.valueA}
                         name='valueA'
@@ -337,7 +368,7 @@ class NewOrder extends React.Component {
                 <TextField
                     id="select-maker-token"
                     select
-                    label="Tokens you're buying"
+                    label="Tokens you're selling"
                     className={classes.textField}
                         value={this.state.idB}
                     onChange={this.handleChange('idB')}
@@ -354,19 +385,6 @@ class NewOrder extends React.Component {
                         </MenuItem>
                     ))}
                 </TextField>
-                <FormControl className={classes.textField}>
-                    <InputLabel htmlFor="amount-B">The amount of tokens youre buying</InputLabel>
-                    <Input
-                        value={this.state.valueB}
-                        name='valueB'
-                        onChange={this.handleUpdate('valueB')}
-                        inputComponent={NumberFormatCustomB}
-                        className={classes.input}
-                        inputProps={{
-                            'aria-label': 'Description',
-                        }}
-                    />
-                </FormControl>
                 <Button fab color="primary" aria-label="add" onClick={this.doSomething} className={classes.button}>
                     <AddIcon className={classes.icon} />
                 </Button>
@@ -378,4 +396,4 @@ class NewOrder extends React.Component {
     }
 }
 
-export default withStyles(styles)(NewOrder);
+export default withStyles(styles)(MarketOrder);

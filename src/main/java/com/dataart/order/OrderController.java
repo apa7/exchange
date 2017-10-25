@@ -49,4 +49,12 @@ public class OrderController {
                 .status(CREATED)
                 .body(createdOrder);
     }
+
+    @RequestMapping(value = "/market", method = POST)
+    ResponseEntity getFills(@RequestBody MarketOrder order) {
+        List<OrderFill> fills = orderService.getFillsForMarketOrder(order);
+        return ResponseEntity
+                .status(OK)
+                .body(fills);
+    }
 }
