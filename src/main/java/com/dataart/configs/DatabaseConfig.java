@@ -1,10 +1,10 @@
 package com.dataart.configs;
 
 import org.flywaydb.core.Flyway;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
@@ -15,7 +15,7 @@ public class DatabaseConfig {
     @Value("${db.migrations}")
     private String migrations;
 
-    @DependsOn("dataSource")
+    @Autowired
     @Bean(name = {"defaultPlatformFlywayConfiguration", "flyway"})
     protected Flyway defaultPlatformFlywayConfiguration(DataSource dataSource) {
         final Flyway flyway = new Flyway();
