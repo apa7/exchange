@@ -7,6 +7,5 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.springframework.transaction.annotation.Propagation.MANDATORY;
 
 @Repository
-@Transactional(propagation = MANDATORY)
 public interface TokenRepository extends JpaRepository<Token, Integer> {
 }
